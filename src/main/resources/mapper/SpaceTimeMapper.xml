@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ 
+ <mapper namespace="spacetime.dao.SpaceTimeDao">
+ 	
+ 	
+ 	<resultMap type="spacetime.model.MemChain" 
+ 			             id="resultMap_memchain">
+ 		<result column="chId" property="chId"/>
+ 		<result column="uId" property="uId"/>
+ 		<result column="chName" property="chName"/>
+ 		<result column="chDetail" property="chDetail"/>
+ 		<result column="scTime" property="scTime"/>
+ 		<result column="cslTime" property="cslTime"/>
+ 		<result column="seTime" property="seTime"/>
+ 		<result column="celTime" property="celTime"/>
+ 		<result column="chFlag" property="chFlag"/>
+ 		<result column="chTime" property="chTime"/>
+ 		<result column="chContextJSON" property="chContextJSON"/>
+ 	</resultMap>
+ 	
+ 	<resultMap type="spacetime.model.MemFragmentBody" 
+ 			             id="resultMap_membodies">
+ 		<result column="fId" property="fId"/>
+ 		<result column="uId" property="uId"/>
+ 		<result column="cTime" property="cTime"/>
+ 		<result column="tFLag" property="tFLag"/>
+ 		<result column="sTime" property="sTime"/>
+ 		<result column="eTime" property="eTime"/>
+ 		<result column="slTime" property="slTime"/>
+ 		<result column="elTime" property="elTime"/>
+ 		<result column="ftDetail" property="ftDetail"/>
+ 		<result column="fLatitude" property="fLatitude"/>
+ 		<result column="fLongitude" property="fLongitude"/>
+ 		<result column="fpDetail" property="fpDetail"/>
+ 		<result column="coFlag" property="coFlag"/>
+ 		<result column="cellX" property="cellX"/>
+ 		<result column="cellY" property="cellY"/>
+ 		<result column="fTitle" property="fTitle"/>
+ 		<result column="bodyItemsJSON" property="bodyItemsJSON"/>
+ 	</resultMap>
+ 	
+ 	<resultMap type="spacetime.model.ShareBlock" 
+ 			             id="resultMap_shareblock">
+ 		<result column="sId" property="sId"/>
+ 		<result column="ceId" property="ceId"/>
+ 		<result column="sFlag" property="sFlag"/>
+ 		<result column="sTime" property="sTime"/>
+ 		<result column="uId" property="uId"/>
+ 		<result column="uNickName" property="uNickName"/>
+ 		<result column="pokerCount" property="pokerCount"/>
+ 		<result column="sData1" property="sData1"/>
+ 		<result column="sData2" property="sData2"/>
+ 		<result column="sData3" property="sData3"/>
+ 		
+ 	</resultMap>
+ 	
+ 	
+ 	
+ 	 <select id="checkNickName" resultType="java.lang.Integer">
+    	select count(uNickName) from 
+         (select uNickName from userinfo 
+             where uNickName = #{uNickName} limit 1) as tmp
+     </select>
+     
+     <select id="getUserInfoByNickName" resultType="spacetime.model.UserInfo">
+    	select * from userinfo 
+             where uNickName = #{uNickName} limit 1
+     </select>
+     
+     <select id="getUserInfoByuId" resultType="spacetime.model.UserInfo">
+    	select * from userinfo 
+             where uId = #{uId} limit 1
+     </select>
+     
+     <insert id="addUser">
+     	insert into userinfo 
+ 		(uId,uNickname,uPassword,cellX,cellY,campFlag,crTime,crDesc) 
+ 		values(#{userInfo.uId},#{userInfo.uNickName},#{userInfo.uPassword},#{userInfo.cellX},
+ 		       #{userInfo.cellY},#{userInfo.campFlag},#{userInfo.crTime},#{userInfo.crDesc});
+     </insert>
+     
+     
+    <select id="getSpaceCellByceId" resultType="spacetime.model.SpaceCell">
+    	select * from spacecell
+             where ceId = #{ceId} limit 1
+    </select>
+     
+     
+     <insert id="addSpaceCell">
+     	insert into spacecell 
+ 		(ceId,cellX,cellY,ceTime,uId,uNickName,btCount) 
+ 		values(#{cell.ceId},#{cell.cellX},#{cell.cellY},#{cell.ceTime},
+ 		       #{cell.uId},#{cell.uNickName},#{cell.btCount});
+     </insert>
+     
+     <update id= "updateSpaceCellBtCountInc">
+     	update spacecell set btCount = btCount + 1 where ceId = #{ceId}
+     </update>
+     
+       <update id= "updateSpaceCellOther">
+     	update spacecell set 
+     		mR = #{cell.mR},
+     		mG = #{cell.mG},
+     		mB = #{cell.mB},
+     		ceDownTime = #{cell.ceDownTime},
+     		ceDownLTime = #{cell.ceDownLTime},
+     		ceUpTime = #{cell.ceUpTime},
+     		ceUpLTime = #{cell.ceUpLTime}
+     	where ceId = #{cell.ceId}
+     </update>
+     
+     
+     <select id="getMemChiansByUid" resultMap="resultMap_memchain">
+ 		SELECT * FROM memchain where uId = #{uId}
+ 	</select>
+ 	
+ 	<select id="getMemBodiesByUid" resultMap="resultMap_membodies">
+ 		SELECT * FROM memfragmentbody where uId = #{uId}
+ 	</select>
+ 	
+ 	
+ 	<update id="updateUserInfo">
+ 		update userinfo set
+ 			uSex = 	#{userInfo.uSex},
+ 			uBri =  #{userInfo.uBri},
+ 			uSign =  #{userInfo.uSign}
+ 		where uId = #{userInfo.uId}	
+ 	</update>
+     
+     <insert id="insertMemChain">
+     	insert into memchain 
+     	(chId,uId,chName,chDetail,scTime,cslTime,seTime,celTime,chFlag,chTime,chContextJSON)
+     	values
+     	(#{chain.chId},#{chain.uId},#{chain.chName},#{chain.chDetail},
+     	#{chain.scTime},#{chain.cslTime},
+     	#{chain.seTime},#{chain.celTime},#{chain.chFlag},
+     	#{chain.chTime},#{chain.chContextJSON})
+     </insert>
+     
+
+	<select id="getMemChainByChId" resultType="spacetime.model.MemChain">
+		
+	select * from memchain where chId = #{chId} limit 1
+	
+	</select>
+
+	<delete id="deleteMemChainByChId">
+		delete from memchain where chId=#{chId}	
+	</delete>
+
+	<select id="isContainMemChain" resultType="java.lang.Integer">
+		select count(chId) from memchain where chId = #{chId} limit 1
+	</select>
+	
+	
+	 <insert id="insertMemBody">
+     	insert into memfragmentbody 
+     	(fId,uId,cTime,tFLag,sTime,
+     	eTime,slTime,elTime,ftDetail,
+     	fLatitude,fLongitude,fpDetail,
+     	coFlag,cellX,cellY,fTitle,bodyItemsJSON)
+     	values
+     	(#{body.fId},#{body.uId},#{body.cTime},#{body.tFLag},#{body.sTime},
+     	#{body.eTime},#{body.slTime},#{body.elTime},#{body.ftDetail},
+     	#{body.fLatitude},#{body.fLongitude},#{body.fpDetail},
+     	#{body.coFlag},#{body.cellX},#{body.cellY},#{body.fTitle},#{body.bodyItemsJSON})
+     </insert>
+     
+     <select id="isContainMemBody" resultType="java.lang.Integer">
+		select count(fId) from memfragmentbody where fId = #{fId} limit 1
+	</select>
+	
+	 <select id="getMemFragmentBodyByfId" resultType="spacetime.model.MemFragmentBody">
+		select * from memfragmentbody where fId = #{fId} limit 1
+	</select>
+
+	<insert id="insertShareBlock">
+     	insert into shareblock 
+     	(sId,ceId,sFlag,sTime,uId,
+     	uNickName,pokerCount,sData1,
+     	sData2,sData3)
+     	values
+     	(#{block.sId},#{block.ceId},#{block.sFlag},#{block.sTime},#{block.uId},
+     	#{block.uNickName},#{block.pokerCount},#{block.sData1},
+     	#{block.sData2},#{block.sData3})
+     </insert>
+     
+     <delete id="deleteShareBlock">
+		delete from shareblock where sId=#{sId}	
+	</delete>
+	
+	
+	 <select id="getShareBlocksByceId" 
+	 		resultMap="resultMap_shareblock">
+	 SELECT * FROM 
+	   (
+	   SELECT * FROM spacetime.shareblock  where ceId = #{ceId}
+	      order by sTime desc 
+	    ) as tmp 
+		limit #{index} ,10;
+	</select>
+
+
+
+ </mapper>
